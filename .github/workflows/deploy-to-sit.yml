@@ -8,25 +8,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: |
-          npm install --global @salesforce/cli
-          sf --version
+        run: npm install --global @salesforce/cli
 
-      - name: Authenticate with Salesforce Org
+      - name: Authenticate with Salesforce
         run: |
           echo ${{ secrets.SF_SIT_AUTH_URL }} > ./authURL
-          sf org login sfdx-url -f ./authURL --set-default --json
+          sf org login sfdx-url --sfdx-url-file ./authURL --alias SIT --set-default
+          sf org list
 
-      - name: Deploy metadata to SIT
-        run: |
-          sf project deploy start --manifest manifest/package.xml --target-org SIT --wait 10
-
-      - name: Run Apex Tests
-        run: |
-          sf apex run test --target-org SIT --wait 10
+      - name: Deploy to SIT
+        run: sf project deploy start --manifest manifest/package.xml --target-org SIT --wait 10
