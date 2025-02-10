@@ -20,7 +20,7 @@ jobs:
 
       - name: Authenticate with Salesforce Org
         run: |
-          echo ${{ secrets.SF_AUTH_URL_SIT }} > ./authURL
+          echo ${{ secrets.SF_SIT_AUTH_URL }} > ./authURL
           sf org login sfdx-url -f ./authURL --set-default --json
 
       - name: Deploy metadata to SIT
