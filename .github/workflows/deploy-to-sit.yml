@@ -3,7 +3,7 @@ name: Deploy to SIT
 on:
   push:
     branches:
-      - sit  # Trigger deployment when changes are pushed to SIT
+      - sit
 
 jobs:
   deploy:
@@ -15,14 +15,18 @@ jobs:
 
       - name: Install Salesforce CLI
         run: |
-          npm install --global sfdx-cli
+          npm install --global @salesforce/cli
+          sf --version
 
-      - name: Authenticate with Salesforce SIT Org
+      - name: Authenticate with Salesforce Org
         run: |
           echo ${{ secrets.SF_AUTH_URL_SIT }} > ./authURL
-          sf org login sfdx-url --sfdx-url-file ./authURL --alias SIT --set-default
-          rm ./authURL
+          sf org login sfdx-url -f ./authURL --set-default --json
 
       - name: Deploy metadata to SIT
         run: |
-          sf project deploy start --target-org SIT --wait 10 --verbose
+          sf project deploy start --manifest manifest/package.xml --target-org sit --wait 10
+
+      - name: Run Apex Tests
+        run: |
+          sf apex run test --target-org sit --wait 10
