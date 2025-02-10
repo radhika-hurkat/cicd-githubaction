@@ -1,0 +1,28 @@
+name: Deploy to SIT
+
+on:
+  push:
+    branches:
+      - sit  # Trigger deployment when changes are pushed to SIT
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install --global sfdx-cli
+
+      - name: Authenticate with Salesforce SIT Org
+        run: |
+          echo ${{ secrets.SF_AUTH_URL_SIT }} > ./authURL
+          sf org login sfdx-url --sfdx-url-file ./authURL --alias SIT --set-default
+          rm ./authURL
+
+      - name: Deploy metadata to SIT
+        run: |
+          sf project deploy start --target-org SIT --wait 10 --verbose
