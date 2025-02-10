@@ -25,8 +25,8 @@ jobs:
 
       - name: Deploy metadata to SIT
         run: |
-          sf project deploy start --manifest manifest/package.xml --target-org sit --wait 10
+          sf project deploy start --manifest manifest/package.xml --target-org SIT --wait 10
 
       - name: Run Apex Tests
         run: |
-          sf apex run test --target-org sit --wait 10
+          sf apex run test --target-org SIT --wait 10
