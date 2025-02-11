@@ -1,9 +1,9 @@
-name: Deploy to UAT
+name: Deploy to PROD
 
 on:
   push:
     branches:
-      - uat
+      - main
 
 jobs:
   deploy:
@@ -17,9 +17,9 @@ jobs:
 
       - name: Authenticate with Salesforce
         run: |
-          echo ${{ secrets.SF_UAT_AUTH_URL }} > ./authURL
-          sf org login sfdx-url --sfdx-url-file ./authURL --alias UAT --set-default
+          echo ${{ secrets.SF_PROD_AUTH_URL }} > ./authURL
+          sf org login sfdx-url --sfdx-url-file ./authURL --alias PROD --set-default
           sf org list
 
-      - name: Deploy to UAT
-        run: sf project deploy start --manifest manifest/package.xml --target-org UAT --wait 10
+      - name: Deploy to PROD
+        run: sf project deploy start --manifest manifest/package.xml --target-org PROD --wait 10
