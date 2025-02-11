@@ -3,26 +3,23 @@ name: Deploy to UAT
 on:
   push:
     branches:
-      - uat  # Trigger deployment when changes are pushed to SIT
+      - uat
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Salesforce CLI
-        run: |
-          npm install --global sfdx-cli
+        run: npm install --global @salesforce/cli
 
-      - name: Authenticate with Salesforce UAT Org
+      - name: Authenticate with Salesforce
         run: |
           echo ${{ secrets.SF_UAT_AUTH_URL }} > ./authURL
           sf org login sfdx-url --sfdx-url-file ./authURL --alias UAT --set-default
-          rm ./authURL
+          sf org list
 
-      - name: Deploy metadata to UAT
-        run: |
-          sf project deploy start --target-org UAT --wait 10 --verbose
+      - name: Deploy to UAT
+        run: sf project deploy start --manifest manifest/package.xml --target-org UAT --wait 10
