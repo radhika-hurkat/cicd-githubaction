@@ -1,0 +1,25 @@
+name: Deploy to PROD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+
+      - name: Authenticate with Salesforce
+        run: |
+          echo ${{ secrets.SF_PROD_AUTH_URL }} > ./authURL
+          sf org login sfdx-url --sfdx-url-file ./authURL --alias PROD --set-default
+          sf org list
+
+      - name: Deploy to PROD
+        run: sf project deploy start --manifest manifest/package.xml --target-org PROD --wait 10
